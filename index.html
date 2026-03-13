@@ -1,275 +1,306 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
     <title>今天吃什么 · 摇一摇</title>
     <style>
-        /* 完全恢复原来的精美样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      /* 完全恢复原来的精美样式 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #f5f5f7;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            padding: 20px;
-        }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background: #f5f5f7;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 20px;
+      }
 
+      .card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 32px;
+        box-shadow:
+          0 20px 40px rgba(0, 0, 0, 0.08),
+          0 6px 12px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 500px;
+        padding: 40px 30px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      h1 {
+        font-size: 2.8rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: #1d1c1f;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .subhead {
+        font-size: 1.1rem;
+        color: #6e6d73;
+        margin-bottom: 40px;
+        font-weight: 400;
+      }
+
+      button {
+        background: #007aff;
+        border: none;
+        color: white;
+        font-size: 1.4rem;
+        font-weight: 500;
+        padding: 16px 32px;
+        border-radius: 40px;
+        cursor: pointer;
+        box-shadow: 0 8px 16px rgba(0, 122, 255, 0.3);
+        transition: all 0.2s ease;
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto 30px;
+        display: block;
+        outline: none;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      button:hover {
+        background: #005fc7;
+        transform: scale(1.02);
+        box-shadow: 0 12px 24px rgba(0, 122, 255, 0.4);
+      }
+
+      button:active {
+        transform: scale(0.98);
+        background: #004999;
+        box-shadow: 0 4px 8px rgba(0, 122, 255, 0.3);
+      }
+
+      .result-box {
+        background: white;
+        border-radius: 24px;
+        padding: 30px 20px;
+        margin-top: 20px;
+        box-shadow:
+          inset 0 2px 4px rgba(0, 0, 0, 0.02),
+          0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f0f0f3;
+      }
+
+      #result {
+        font-size: 2.4rem;
+        font-weight: 600;
+        color: #1d1c1f;
+        line-height: 1.3;
+        word-break: break-word;
+      }
+
+      .placeholder {
+        color: #a1a0a5;
+        font-size: 1.8rem;
+        font-weight: 400;
+      }
+
+      .footer-note {
+        margin-top: 30px;
+        font-size: 0.9rem;
+        color: #8e8e93;
+      }
+
+      @media (max-width: 480px) {
         .card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 500px;
-            padding: 40px 30px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+          padding: 30px 20px;
         }
-
         h1 {
-            font-size: 2.8rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            color: #1d1c1f;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+          font-size: 2.4rem;
         }
-
-        .subhead {
-            font-size: 1.1rem;
-            color: #6e6d73;
-            margin-bottom: 40px;
-            font-weight: 400;
-        }
-
-        button {
-            background: #007aff;
-            border: none;
-            color: white;
-            font-size: 1.4rem;
-            font-weight: 500;
-            padding: 16px 32px;
-            border-radius: 40px;
-            cursor: pointer;
-            box-shadow: 0 8px 16px rgba(0, 122, 255, 0.3);
-            transition: all 0.2s ease;
-            width: 100%;
-            max-width: 280px;
-            margin: 0 auto 30px;
-            display: block;
-            outline: none;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        button:hover {
-            background: #005fc7;
-            transform: scale(1.02);
-            box-shadow: 0 12px 24px rgba(0, 122, 255, 0.4);
-        }
-
-        button:active {
-            transform: scale(0.98);
-            background: #004999;
-            box-shadow: 0 4px 8px rgba(0, 122, 255, 0.3);
-        }
-
-        .result-box {
-            background: white;
-            border-radius: 24px;
-            padding: 30px 20px;
-            margin-top: 20px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02), 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f0f0f3;
-        }
-
         #result {
-            font-size: 2.4rem;
-            font-weight: 600;
-            color: #1d1c1f;
-            line-height: 1.3;
-            word-break: break-word;
+          font-size: 2rem;
         }
-
-        .placeholder {
-            color: #a1a0a5;
-            font-size: 1.8rem;
-            font-weight: 400;
+        button {
+          font-size: 1.2rem;
+          padding: 14px 24px;
+          max-width: 240px;
         }
-
-        .footer-note {
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: #8e8e93;
-        }
-
-        @media (max-width: 480px) {
-            .card {
-                padding: 30px 20px;
-            }
-            h1 {
-                font-size: 2.4rem;
-            }
-            #result {
-                font-size: 2rem;
-            }
-            button {
-                font-size: 1.2rem;
-                padding: 14px 24px;
-                max-width: 240px;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="card">
-        <h1>
-            <span>🍱</span> 今天吃什么
-        </h1>
-        <div class="subhead">摇一摇，让手机帮你决定</div>
+      <h1><span>🍱</span> 今天吃什么</h1>
+      <div class="subhead">摇一摇，让手机帮你决定</div>
 
-        <!-- 注意：原内联onclick已被移除，通过JS监听事件 -->
-        <button id="shakeBtn">摇一摇 👆</button>
+      <!-- 注意：原内联onclick已被移除，通过JS监听事件 -->
+      <button id="shakeBtn">摇一摇 👆</button>
 
-        <div class="result-box">
-            <div id="result" class="placeholder">等待你的选择…</div>
-        </div>
+      <div class="result-box">
+        <div id="result" class="placeholder">等待你的选择…</div>
+      </div>
 
-        <div class="footer-note">
-            每次点击或摇动手机随机推荐一种美食
-        </div>
+      <div class="footer-note">每次点击或摇动手机随机推荐一种美食</div>
     </div>
 
     <script>
-        (function() {
-            // ---------- 随机选择美食（核心功能）----------
-            function pickFood() {
-                const options = ["沙县小吃", "兰州拉面", "麦当劳", "煲仔饭", "麻辣烫", "肯德基", "日式拉面", "越南河粉", "螺蛳粉", "披萨", "寿司", "烤肉饭"];
-                const choice = options[Math.floor(Math.random() * options.length)];
-                const resultEl = document.getElementById('result');
-                resultEl.innerText = `✨ ${choice}`;
-                resultEl.classList.remove('placeholder');
+      (function () {
+        // ---------- 随机选择美食（核心功能）----------
+        function pickFood() {
+          const options = [
+            "沙县小吃",
+            "兰州拉面",
+            "麦当劳",
+            "煲仔饭",
+            "麻辣烫",
+            "肯德基",
+            "日式拉面",
+            "越南河粉",
+            "螺蛳粉",
+            "披萨",
+            "寿司",
+            "烤肉饭",
+          ];
+          const choice = options[Math.floor(Math.random() * options.length)];
+          const resultEl = document.getElementById("result");
+          resultEl.innerText = `✨ ${choice}`;
+          resultEl.classList.remove("placeholder");
 
-                // 轻振动（如果设备支持）
-                if (navigator.vibrate) {
-                    navigator.vibrate(10);
-                }
+          // 震动增强：两段式震动，更容易感知
+          if (navigator.vibrate) {
+            navigator.vibrate([50, 80, 50]); // 可自由调整
+          }
+        }
+
+        // ---------- 摇一摇检测相关变量 ----------
+        let lastX, lastY, lastZ; // 上一次加速度值
+        let lastShakeTime = 0; // 上次触发摇动的时间戳
+        const SHAKE_THRESHOLD = 18; // 摇动灵敏度 (可根据需要调整，越小越敏感)
+        const MIN_SHAKE_INTERVAL = 1000; // 两次摇动最小间隔 (毫秒)
+
+        let shakeListenerActive = false; // 是否已添加devicemotion监听器
+
+        // ---------- 启用摇动监听 ----------
+        function enableShakeDetection() {
+          if (shakeListenerActive) return; // 防止重复添加
+          window.addEventListener("devicemotion", handleDeviceMotion);
+          shakeListenerActive = true;
+          console.log("摇动监听已启用");
+        }
+
+        // ---------- 处理设备运动事件 ----------
+        function handleDeviceMotion(event) {
+          // 优先使用不含重力的加速度，若无则使用包含重力的
+          let accel = event.acceleration || event.accelerationIncludingGravity;
+          if (!accel) return;
+
+          let { x, y, z } = accel;
+          if (x === null || y === null || z === null) return;
+
+          let currentTime = Date.now();
+
+          // 初始化上次值
+          if (lastX === undefined) {
+            lastX = x;
+            lastY = y;
+            lastZ = z;
+            return;
+          }
+
+          // 计算变化总量
+          let delta =
+            Math.abs(x - lastX) + Math.abs(y - lastY) + Math.abs(z - lastZ);
+
+          // 判断是否为有效摇动
+          if (
+            delta > SHAKE_THRESHOLD &&
+            currentTime - lastShakeTime > MIN_SHAKE_INTERVAL
+          ) {
+            pickFood(); // 触发随机美食
+            lastShakeTime = currentTime; // 更新触发时间
+          }
+
+          // 更新上一次值
+          lastX = x;
+          lastY = y;
+          lastZ = z;
+        }
+
+        // ---------- iOS权限请求（针对iOS 13+）----------
+        async function requestIosPermission() {
+          if (
+            !window.DeviceMotionEvent ||
+            typeof DeviceMotionEvent.requestPermission !== "function"
+          ) {
+            return true; // 非iOS设备，无需权限
+          }
+          try {
+            const permissionState = await DeviceMotionEvent.requestPermission();
+            return permissionState === "granted";
+          } catch (err) {
+            console.warn("设备运动权限请求失败:", err);
+            return false;
+          }
+        }
+
+        // ---------- 初始化：针对非iOS直接启用摇动监听 ----------
+        function initShake() {
+          // 如果不是iOS（即不需要请求权限），直接启用监听
+          if (
+            !window.DeviceMotionEvent ||
+            typeof DeviceMotionEvent.requestPermission !== "function"
+          ) {
+            enableShakeDetection();
+          }
+          // iOS设备：等待用户点击按钮时再请求权限并启用监听
+        }
+
+        // ---------- 按钮点击处理 ----------
+        const btn = document.getElementById("shakeBtn");
+        if (btn) {
+          // 移除可能存在的内联onclick（防止重复调用）
+          btn.removeAttribute("onclick");
+
+          btn.addEventListener("click", async function () {
+            // 按钮本身功能：随机选美食
+            pickFood();
+
+            // 如果是iOS，在此请求权限并启用摇动监听
+            if (
+              window.DeviceMotionEvent &&
+              typeof DeviceMotionEvent.requestPermission === "function"
+            ) {
+              const granted = await requestIosPermission();
+              if (granted) {
+                enableShakeDetection();
+              } else {
+                alert("需要设备运动权限才能使用摇一摇功能");
+              }
+            } else {
+              // 非iOS：确保监听已启用（可能之前已启用，但无妨）
+              enableShakeDetection();
             }
+          });
+        }
 
-            // ---------- 摇一摇检测相关变量 ----------
-            let lastX, lastY, lastZ;             // 上一次加速度值
-            let lastShakeTime = 0;                // 上次触发摇动的时间戳
-            const SHAKE_THRESHOLD = 18;            // 摇动灵敏度 (可根据需要调整，越小越敏感)
-            const MIN_SHAKE_INTERVAL = 1000;       // 两次摇动最小间隔 (毫秒)
-
-            let shakeListenerActive = false;       // 是否已添加devicemotion监听器
-
-            // ---------- 启用摇动监听 ----------
-            function enableShakeDetection() {
-                if (shakeListenerActive) return;   // 防止重复添加
-                window.addEventListener('devicemotion', handleDeviceMotion);
-                shakeListenerActive = true;
-                console.log('摇动监听已启用');
-            }
-
-            // ---------- 处理设备运动事件 ----------
-            function handleDeviceMotion(event) {
-                // 优先使用不含重力的加速度，若无则使用包含重力的
-                let accel = event.acceleration || event.accelerationIncludingGravity;
-                if (!accel) return;
-
-                let { x, y, z } = accel;
-                if (x === null || y === null || z === null) return;
-
-                let currentTime = Date.now();
-
-                // 初始化上次值
-                if (lastX === undefined) {
-                    lastX = x;
-                    lastY = y;
-                    lastZ = z;
-                    return;
-                }
-
-                // 计算变化总量
-                let delta = Math.abs(x - lastX) + Math.abs(y - lastY) + Math.abs(z - lastZ);
-
-                // 判断是否为有效摇动
-                if (delta > SHAKE_THRESHOLD && (currentTime - lastShakeTime) > MIN_SHAKE_INTERVAL) {
-                    pickFood();                     // 触发随机美食
-                    lastShakeTime = currentTime;    // 更新触发时间
-                }
-
-                // 更新上一次值
-                lastX = x;
-                lastY = y;
-                lastZ = z;
-            }
-
-            // ---------- iOS权限请求（针对iOS 13+）----------
-            async function requestIosPermission() {
-                if (!window.DeviceMotionEvent || typeof DeviceMotionEvent.requestPermission !== 'function') {
-                    return true;   // 非iOS设备，无需权限
-                }
-                try {
-                    const permissionState = await DeviceMotionEvent.requestPermission();
-                    return permissionState === 'granted';
-                } catch (err) {
-                    console.warn('设备运动权限请求失败:', err);
-                    return false;
-                }
-            }
-
-            // ---------- 初始化：针对非iOS直接启用摇动监听 ----------
-            function initShake() {
-                // 如果不是iOS（即不需要请求权限），直接启用监听
-                if (!window.DeviceMotionEvent || typeof DeviceMotionEvent.requestPermission !== 'function') {
-                    enableShakeDetection();
-                }
-                // iOS设备：等待用户点击按钮时再请求权限并启用监听
-            }
-
-            // ---------- 按钮点击处理 ----------
-            const btn = document.getElementById('shakeBtn');
-            if (btn) {
-                // 移除可能存在的内联onclick（防止重复调用）
-                btn.removeAttribute('onclick');
-
-                btn.addEventListener('click', async function() {
-                    // 按钮本身功能：随机选美食
-                    pickFood();
-
-                    // 如果是iOS，在此请求权限并启用摇动监听
-                    if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
-                        const granted = await requestIosPermission();
-                        if (granted) {
-                            enableShakeDetection();
-                        } else {
-                            alert('需要设备运动权限才能使用摇一摇功能');
-                        }
-                    } else {
-                        // 非iOS：确保监听已启用（可能之前已启用，但无妨）
-                        enableShakeDetection();
-                    }
-                });
-            }
-
-            // 执行初始化
-            initShake();
-        })();
+        // 执行初始化
+        initShake();
+      })();
     </script>
-</body>
+  </body>
 </html>
