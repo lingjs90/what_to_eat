@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>今天吃什么 · 摇一摇</title>
     <style>
-        /* 完全恢复原来的精美样式 */
+        /* 保持原样式不变 */
         * {
             margin: 0;
             padding: 0;
@@ -161,15 +161,13 @@
                 const resultEl = document.getElementById('result');
                 resultEl.innerText = `✨ ${choice}`;
                 resultEl.classList.remove('placeholder');
-                // 已移除所有震动代码
             }
 
             // ---------- 摇一摇检测 ----------
             let lastX, lastY, lastZ;
             let lastShakeTime = 0;
-            const SHAKE_THRESHOLD = 18;            // 灵敏度 (可调)
-            const MIN_SHAKE_INTERVAL = 1000;       // 最小触发间隔
-
+            const SHAKE_THRESHOLD = 18;
+            const MIN_SHAKE_INTERVAL = 1000;
             let shakeListenerActive = false;
 
             function handleDeviceMotion(event) {
@@ -186,7 +184,7 @@
 
                 let delta = Math.abs(x - lastX) + Math.abs(y - lastY) + Math.abs(z - lastZ);
                 if (delta > SHAKE_THRESHOLD && (currentTime - lastShakeTime) > MIN_SHAKE_INTERVAL) {
-                    pickFood();                     // 触发随机美食
+                    pickFood();
                     lastShakeTime = currentTime;
                 }
 
@@ -197,12 +195,13 @@
                 if (shakeListenerActive) return;
                 window.addEventListener('devicemotion', handleDeviceMotion);
                 shakeListenerActive = true;
+                console.log('摇动监听已启用');
             }
 
             // ---------- iOS权限请求 ----------
             async function requestIosPermission() {
                 if (!window.DeviceMotionEvent || typeof DeviceMotionEvent.requestPermission !== 'function') {
-                    return true;   // 非iOS设备
+                    return true; // 非iOS设备
                 }
                 try {
                     const permissionState = await DeviceMotionEvent.requestPermission();
@@ -213,38 +212,65 @@
                 }
             }
 
-            // ---------- 初始化 ----------
-            function initShake() {
-                // 非iOS设备直接启用监听
-                if (!window.DeviceMotionEvent || typeof DeviceMotionEvent.requestPermission !== 'function') {
+            // 标记是否已经请求过iOS权限（避免重复弹窗）
+            let iosPermissionRequested = false;
+
+            async function requestIosPermissionAndEnable() {
+                if (iosPermissionRequested) return false;
+                iosPermissionRequested = true;
+                const granted = await requestIosPermission();
+                if (granted) {
                     enableShakeDetection();
+                } else {
+                    alert('需要设备运动权限才能使用摇一摇功能');
                 }
-                // iOS设备等待用户点击按钮时再请求权限
+                return granted;
+            }
+
+            // ---------- 判断是否为iOS（需要权限的设备）----------
+            const isIOS = window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function';
+
+            // ---------- 初始化 ----------
+            function init() {
+                // 非iOS设备直接启用监听
+                if (!isIOS) {
+                    enableShakeDetection();
+                } else {
+                    // iOS设备：监听任意点击（页面任意位置）来请求权限
+                    // 使用 once 选项确保只触发一次
+                    document.addEventListener('click', function onClickAnywhere() {
+                        document.removeEventListener('click', onClickAnywhere);
+                        requestIosPermissionAndEnable();
+                    }, { once: true });
+                }
             }
 
             // ---------- 按钮点击处理 ----------
             const btn = document.getElementById('shakeBtn');
             if (btn) {
-                btn.removeAttribute('onclick'); // 移除可能的内联onclick
-                btn.addEventListener('click', async function() {
-                    pickFood(); // 点击立即随机美食
+                btn.removeAttribute('onclick');
+                btn.addEventListener('click', async function(e) {
+                    // 先执行随机美食
+                    pickFood();
 
-                    // iOS设备：请求权限并启用摇动监听
-                    if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
-                        const granted = await requestIosPermission();
-                        if (granted) {
-                            enableShakeDetection();
+                    // 如果是iOS，确保权限已请求（可能已经通过页面点击请求过，但无妨）
+                    if (isIOS) {
+                        // 如果尚未请求过权限，在此请求（按钮点击也是手势）
+                        if (!iosPermissionRequested) {
+                            await requestIosPermissionAndEnable();
                         } else {
-                            alert('需要设备运动权限才能使用摇一摇功能');
+                            // 已经请求过，但可能被拒绝或尚未启用？如果未启用，这里不再重复请求
+                            // 但理论上如果之前granted，enableShakeDetection应该已被调用
                         }
                     } else {
-                        // 非iOS设备：确保监听已启用
+                        // 非iOS设备，确保监听已启用（可能已经启用）
                         enableShakeDetection();
                     }
                 });
             }
 
-            initShake();
+            // 启动初始化
+            init();
         })();
     </script>
 </body>
