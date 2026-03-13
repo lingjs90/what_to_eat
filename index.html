@@ -148,18 +148,32 @@
         </div>
 
         <div class="footer-note">
-            每次点击或摇动手机随机推荐一种美食
+            每次点击或摇动手机随机推荐一种美食（不会连续重复）
         </div>
     </div>
 
     <script>
         (function() {
-            // ---------- 随机选择美食（无震动）----------
+            // ---------- 美食列表 ----------
+            const FOOD_OPTIONS = ["沙县小吃", "兰州拉面", "麦当劳", "煲仔饭", "麻辣烫", "肯德基", "日式拉面", "越南河粉", "螺蛳粉", "披萨", "寿司", "烤肉饭"];
+            let lastFood = null; // 上一次选择的美食
+
+            // ---------- 随机选择美食（保证不与上一次重复）----------
             function pickFood() {
-                const options = ["沙县小吃", "兰州拉面", "麦当劳", "煲仔饭", "麻辣烫", "肯德基", "日式拉面", "越南河粉", "螺蛳粉", "披萨", "寿司", "烤肉饭"];
-                const choice = options[Math.floor(Math.random() * options.length)];
+                let newChoice;
+                // 如果列表只有一项，直接选它
+                if (FOOD_OPTIONS.length === 1) {
+                    newChoice = FOOD_OPTIONS[0];
+                } else {
+                    // 循环直到与上一次不同
+                    do {
+                        newChoice = FOOD_OPTIONS[Math.floor(Math.random() * FOOD_OPTIONS.length)];
+                    } while (newChoice === lastFood);
+                }
+                lastFood = newChoice; // 更新记忆
+
                 const resultEl = document.getElementById('result');
-                resultEl.innerText = `✨ ${choice}`;
+                resultEl.innerText = `✨ ${newChoice}`;
                 resultEl.classList.remove('placeholder');
             }
 
@@ -212,7 +226,6 @@
                 }
             }
 
-            // 标记是否已经请求过iOS权限（避免重复弹窗）
             let iosPermissionRequested = false;
 
             async function requestIosPermissionAndEnable() {
@@ -227,17 +240,14 @@
                 return granted;
             }
 
-            // ---------- 判断是否为iOS（需要权限的设备）----------
             const isIOS = window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function';
 
             // ---------- 初始化 ----------
             function init() {
-                // 非iOS设备直接启用监听
                 if (!isIOS) {
-                    enableShakeDetection();
+                    enableShakeDetection(); // 非iOS直接启用监听
                 } else {
-                    // iOS设备：监听任意点击（页面任意位置）来请求权限
-                    // 使用 once 选项确保只触发一次
+                    // iOS：首次任意点击请求权限
                     document.addEventListener('click', function onClickAnywhere() {
                         document.removeEventListener('click', onClickAnywhere);
                         requestIosPermissionAndEnable();
@@ -250,26 +260,18 @@
             if (btn) {
                 btn.removeAttribute('onclick');
                 btn.addEventListener('click', async function(e) {
-                    // 先执行随机美食
-                    pickFood();
+                    pickFood(); // 立即随机美食（已防重复）
 
-                    // 如果是iOS，确保权限已请求（可能已经通过页面点击请求过，但无妨）
                     if (isIOS) {
-                        // 如果尚未请求过权限，在此请求（按钮点击也是手势）
                         if (!iosPermissionRequested) {
                             await requestIosPermissionAndEnable();
-                        } else {
-                            // 已经请求过，但可能被拒绝或尚未启用？如果未启用，这里不再重复请求
-                            // 但理论上如果之前granted，enableShakeDetection应该已被调用
                         }
                     } else {
-                        // 非iOS设备，确保监听已启用（可能已经启用）
                         enableShakeDetection();
                     }
                 });
             }
 
-            // 启动初始化
             init();
         })();
     </script>
